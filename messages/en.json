@@ -1,0 +1,555 @@
+{
+  "Layout": {
+    "appName": "AI Mechanics Lab",
+    "tagline": "Learn by breaking",
+    "concepts": "Concepts",
+    "comingNext": "Coming next",
+    "deerflow": "✦ Deerflow",
+    "closeSidebar": "Close sidebar",
+    "openSidebar": "Open sidebar"
+  },
+  "Home": {
+    "heroLabel": "Interactive AI Education",
+    "heroTitlePart1": "Learn AI systems ",
+    "heroTitleAccent": "by breaking them",
+    "heroText": "Not another AI glossary. Understand RAG, embeddings, vector search, context windows, and tool calling through interactive visual simulations. Change parameters, break the system, see what happens.",
+    "scenesHeading": "Interactive Scenes",
+    "scenesSubtitle": "Each concept has a live simulation with controls and failure modes.",
+    "comingNextHeading": "Coming next",
+    "comingNextSubtitle": "Future topics for the lab.",
+    "footerLine": "A visual lab for understanding how AI systems actually work.",
+    "explore": "Explore"
+  },
+  "ConceptsMeta": {
+    "rag": { "title": "RAG", "shortDescription": "Retrieval-Augmented Generation lets AI answer using external documents by searching for relevant chunks and inserting them into the model's context." },
+    "embeddings": { "title": "Embeddings", "shortDescription": "Embeddings represent text as points in semantic space. Words with similar meaning end up close together, even if they use different words." },
+    "vector-search": { "title": "Vector Search", "shortDescription": "Vector search finds nearest neighbors in embedding space. It retrieves similar items, not guaranteed correct answers." },
+    "context-window": { "title": "Context Window", "shortDescription": "The model only sees what fits into the current context. When it overflows, important instructions and data get pushed out." },
+    "tool-calling": { "title": "Tool Calling", "shortDescription": "The model selects predefined tools and generates structured arguments. The application executes the tool — the model does not act on its own." },
+    "agents": { "title": "Agents", "shortDescription": "Agents run in a loop: goal, plan, tool call, observation, reflection, next step. Without proper constraints, they can loop forever." },
+    "mcp": { "title": "MCP", "shortDescription": "Model Context Protocol is a standard bridge between AI clients and external tools. It standardizes how AI discovers and uses capabilities." },
+    "memory": { "title": "Memory", "shortDescription": "Memory is stored information retrieved later into the context. It is not the same as the model permanently knowing something." }
+  },
+  "Shared": {
+    "simulated": "Simulated",
+    "soon": "Soon",
+    "comingSoon": "Interactive scene coming soon",
+    "inDevelopment": "Controls, visualizations, and failure modes for {title} are in development.",
+    "noContent": "No content yet",
+    "promptPreview": "Prompt Preview",
+    "estimatedTokens": "~{tokens} tokens",
+    "systemLabel": "[System]",
+    "contextLabel": "[Context — {count} chunks]",
+    "userLabel": "[User]",
+    "truncated": "…truncated",
+    "noContext": "No context available",
+    "chooseTwo": "Select two phrases to compare",
+    "searchResults": "Search Results",
+    "noResultsAboveThreshold": "No results above threshold. Try lowering the threshold.",
+    "belowThresholdLabel": "Below threshold ({count})",
+    "queryLabel": "Query",
+    "semanticSpace": "Semantic Space",
+    "semanticSpaceHint": "simplified 2D visualization",
+    "settings": "Settings",
+    "presets": "Presets",
+    "clearSelection": "Clear selection",
+    "distanceInspector": "Distance Inspector",
+    "similarityMode": "Similarity Mode",
+    "userRequest": "User Request",
+    "failureModes": "Failure Modes",
+    "approvalRequired": "Human approval required",
+    "waitingApproval": "Waiting for approval before execution",
+    "approve": "Approve",
+    "approved": "Approved",
+    "tokensUnit": "tokens"
+  },
+  "Concepts": {
+    "whatIsHappening": "What is happening",
+    "howItBreaks": "How it breaks",
+    "realWorldUsage": "Real-world usage",
+    "relatedConcepts": "Related concepts",
+    "rag": {
+      "whatIsHappening_steps": [
+        "Documents are split into chunks based on the chunk size setting.",
+        "Each chunk gets embedded and stored in a vector database.",
+        "The user question is embedded and compared to all chunks.",
+        "The top-K most similar chunks are retrieved.",
+        "Retrieved chunks are inserted into the model's context, up to the context limit.",
+        "The model generates an answer using only the context it received."
+      ],
+      "whatIsHappening_summary": "RAG does not make the model permanently know your documents. Instead, the app searches your documents, selects relevant chunks, and places them into the model's current context.",
+      "howItBreaks": [
+        "Bad chunking: chunks too small lose context; chunks too large dilute relevance.",
+        "TopK too low: misses relevant chunks from other documents.",
+        "Too much noise: irrelevant chunks pollute context, misleading the model.",
+        "Context overflow: context limit too small — relevant chunks get excluded.",
+        "Outdated documents: if source docs are stale, even perfect retrieval produces wrong answers."
+      ],
+      "realWorldUsage": "RAG is used in documentation search (Stripe Docs, Notion AI), customer support chatbots, enterprise knowledge bases, and legal/research tools. Any application that needs to answer questions from a corpus of documents uses some form of RAG. Even GitHub Copilot uses a RAG-like approach to find relevant code context."
+    },
+    "embeddings": {
+      "whatIsHappening_steps": [
+        "Each phrase is assigned coordinates in a high-dimensional vector space.",
+        "Phrases with similar meaning end up close together — forming semantic clusters.",
+        "The 2D map is a simplified projection of this space for visualization.",
+        "Select two phrases to see their distance (Euclidean) and directional similarity (cosine).",
+        "Toggle between semantic similarity (position-based) and keyword similarity (character overlap)."
+      ],
+      "whatIsHappening_summary": "Real embeddings are not 2D — they are typically 256-3072 dimensions. The 2D map is a simplified visualization that preserves the clustering structure. Distances here approximate real embedding distances.",
+      "howItBreaks": [
+        "Similar words, different meaning: two phrases sharing keywords but from different topics can appear close in keyword similarity but far in semantic space.",
+        "Different words, similar meaning: phrases like 'neural network' and 'language model' are semantically close but share few characters — keyword similarity fails.",
+        "Ambiguous phrases: phrases that could belong to multiple topics may be positioned between clusters, confusing both semantic and keyword similarity."
+      ],
+      "realWorldUsage": "Embeddings power semantic search, recommendation systems, clustering, and anomaly detection. Every RAG system depends on embeddings to transform text into searchable vectors. OpenAI's text-embedding-3, Cohere Embed, and open-source models like BGE are widely used. Embeddings are also the foundation for vector databases like Pinecone, Weaviate, and pgvector."
+    },
+    "vector-search": {
+      "whatIsHappening_steps": [
+        "Choose a query phrase — it becomes the search point in vector space.",
+        "The system computes similarity (distance) from the query to every other phrase.",
+        "Phrases are ranked by similarity score and filtered by the threshold.",
+        "The top-K highest-scoring phrases are returned as search results.",
+        "Results below the threshold are excluded, even if they are the closest available match."
+      ],
+      "whatIsHappening_summary": "Vector search finds nearby meaning, not guaranteed truth. A result with high similarity may still be from a different topic — spatial proximity does not always mean contextual relevance.",
+      "howItBreaks": [
+        "Relevant item below threshold: a highly relevant phrase with a borderline similarity score gets excluded by a strict threshold.",
+        "TopK too small: you might need more results than topK allows — relevant items beyond topK are discarded.",
+        "TopK too large: too many results include items from unrelated topics that just happen to be spatially close.",
+        "Close but useless: a result with high similarity from a different topic (e.g., a programming phrase near an AI query) is spatially close but contextually irrelevant."
+      ],
+      "realWorldUsage": "Vector search is the retrieval engine behind RAG, semantic search, image similarity, and recommendation feeds. Vector databases (Pinecone, Weaviate, Milvus, pgvector) use approximate nearest neighbor algorithms like HNSW and IVF to search millions of embeddings in milliseconds. Every similar items or related content feature in modern apps likely uses vector search."
+    },
+    "context-window": {
+      "whatIsHappening_steps": [
+        "The model receives a system prompt, chat history, retrieved documents, tool results, memory, and the user query — all as one sequence of tokens.",
+        "Each block consumes tokens from the total context window limit.",
+        "When the sum exceeds the limit, blocks from the beginning are pushed out.",
+        "Critical content (system prompt, user query) can be lost if context overflows.",
+        "Summarization compresses chat history into a shorter form, freeing space for other blocks."
+      ],
+      "whatIsHappening_summary": "The model only sees what fits into the context. Everything outside the window does not exist to the model — even if it was provided earlier in the conversation. This is why long conversations with AI assistants can sometimes forget earlier instructions.",
+      "howItBreaks": [
+        "System prompt pushed out: when context overflows, the system prompt (which defines model behavior) may be the first to go — the model loses its instructions.",
+        "User query buried: too much history or retrieved context pushes the current request out of the window — the model cannot answer what it cannot see.",
+        "Too many retrieved docs: filling context with marginally relevant chunks leaves no room for the actual question.",
+        "Irrelevant history: old conversation turns consume tokens that could be used for relevant context or instructions."
+      ],
+      "realWorldUsage": "Context window management is critical for all LLM applications. ChatGPT shows a warning when conversations get too long. Claude uses a 200K token window but still benefits from prompt compression. RAG systems must carefully balance retrieved chunks against available space. Every AI product that maintains conversation state must handle context overflow gracefully."
+    },
+    "tool-calling": {
+      "whatIsHappening_steps": [
+        "The user sends a request — the model inspects it and determines what action is needed.",
+        "The model selects the most appropriate tool from the available set based on tool descriptions.",
+        "The model generates structured JSON arguments matching the tool's parameter schema.",
+        "The application (not the model) executes the selected tool with the generated arguments.",
+        "The tool result is returned to the model — it can use this to formulate a final response."
+      ],
+      "whatIsHappening_summary": "The model does not execute actions by itself. It only selects which tool to call and generates the arguments. The application executes the tool and returns the result. If the model's selection is wrong, the wrong action is performed.",
+      "howItBreaks": [
+        "Bad tool description: vague or incomplete descriptions cause the model to select the wrong tool — even if the correct tool exists.",
+        "Similar tools confuse: two tools with overlapping functionality (e.g. search_documents vs search_files) make selection ambiguous.",
+        "Missing required fields: if the model fails to generate all required parameters, the tool call fails before execution.",
+        "No approval for destructive actions: without human confirmation, the model may trigger dangerous side effects (sending emails, modifying data).",
+        "Tool returns error: if a tool fails, the model must interpret the error and decide whether to retry or inform the user."
+      ],
+      "realWorldUsage": "Tool calling is used in AI assistants that interact with external systems: ChatGPT plugins, GitHub Copilot's agent mode, customer support bots that create tickets, coding assistants that run terminal commands, and AI agents that browse the web or query databases. The OpenAI function calling API and Anthropic's tool use are the most common implementations. Every AI agent is fundamentally built on tool calling."
+    },
+    "placeholder": {
+      "whatIsHappening": "This concept page will include an interactive visual simulation that shows exactly how {title} works in AI systems. You will be able to change parameters, observe results, and understand the mechanics.",
+      "howItBreaks": "Every concept in AI Mechanics Lab includes failure modes — ways the system can go wrong. Understanding failures is often more valuable than understanding ideal behavior.",
+      "realWorldUsage": "{title} is used in production AI systems today. The interactive scene will show real examples of how developers use this concept in their applications."
+    }
+  },
+  "Rag": {
+    "systemPrompt": "You are a helpful assistant. Answer questions using the provided context. If the context does not contain the answer, say so.",
+    "pipeline": {
+      "documents": "Documents",
+      "chunking": "Chunking",
+      "embeddings": "Embeddings",
+      "vectorDb": "Vector DB",
+      "retrieval": "Retrieval",
+      "context": "Context",
+      "answer": "Answer",
+      "chunks": "{count} chunks",
+      "results": "{count} results",
+      "fit": "{fit} fit, {excl} excl.",
+      "generated": "generated",
+      "pending": "pending",
+      "vectorized": "vectorized",
+      "indexed": "indexed"
+    },
+    "documents": {
+      "title": "Documents ({count})",
+      "tokens": "~{n} tokens",
+      "chars": "{n} chars"
+    },
+    "chunks": {
+      "title": "Chunks ({count})",
+      "chunkSize": "chunk size: {size} tokens",
+      "tooSmall": "TOO SMALL",
+      "tooLarge": "TOO LARGE",
+      "noChunks": "No chunks to display"
+    },
+    "retrieval": {
+      "title": "Retrieval Results",
+      "topK": "topK: {k}",
+      "noChunks": "No chunks retrieved",
+      "strong": "Strong",
+      "moderate": "Moderate",
+      "weak": "Weak",
+      "noise": "NOISE",
+      "score": "{score}%"
+    },
+    "context": {
+      "title": "Context Window",
+      "inContext": "In context ({count})",
+      "excluded": "Excluded ({count})",
+      "relevant": "RELEVANT",
+      "used": "Used: {used}",
+      "free": "Free: {free}",
+      "noFit": "No chunks fit in context"
+    },
+    "answer": {
+      "title": "Simulated Answer",
+      "userQuery": "User query",
+      "lowQuality": "Low quality answer",
+      "answer": "Answer",
+      "degraded": "DEGRADED"
+    },
+    "controls": {
+      "chunkSize": "Chunk size: {size} tokens",
+      "chunkSizeHintSmall": "Too small — chunks lose context",
+      "chunkSizeHintLarge": "Too large — chunks dilute relevance",
+      "chunkSizeHintGood": "Good balance of precision and context",
+      "topK": "TopK: {k}",
+      "topKHintLow": "Too low — missing relevant chunks",
+      "topKHintHigh": "Too high — filling context with noise",
+      "topKHintGood": "Good retrieval breadth",
+      "contextLimit": "Context limit: {limit} tokens",
+      "contextLimitHintSmall": "Too small — relevant chunks excluded",
+      "contextLimitHintLarge": "Plenty of space for context",
+      "contextLimitHintGood": "Balanced context window",
+      "noiseLevel": "Noise level: {level}%",
+      "noiseLevelHintHigh": "High noise — irrelevant chunks pollute retrieval",
+      "noiseLevelHintSome": "Some noise in results",
+      "noiseLevelHintClean": "Clean retrieval",
+      "query": "Query"
+    },
+    "presets": {
+      "goodRag": "Good RAG",
+      "goodRagDesc": "Optimal settings: balanced chunks, sufficient retrieval, clean results.",
+      "badChunking": "Bad chunking",
+      "badChunkingDesc": "Chunks are too small — fragments lose context and meaning.",
+      "topkLow": "TopK too low",
+      "topkLowDesc": "Only one chunk retrieved — misses relevant content from other documents.",
+      "tooMuchNoise": "Too much noise",
+      "tooMuchNoiseDesc": "Noise documents pollute retrieval with irrelevant chunks.",
+      "contextOverflow": "Context overflow",
+      "contextOverflowDesc": "Context limit too small — relevant chunks get excluded."
+    }
+  },
+  "Embeddings": {
+    "phrases": "Phrases ({count})",
+    "semanticSimilarity": "Semantic similarity",
+    "semanticDesc": "Based on vector position. Phrases with similar meaning are close.",
+    "keywordSimilarity": "Keyword similarity",
+    "keywordDesc": "Based on character overlap. Different words for same meaning score low.",
+    "euclideanDistance": "Euclidean distance",
+    "cosineSimilarity": "Cosine similarity",
+    "similarityBarLexical": "Keyword similarity (3-gram Jaccard)",
+    "sameCluster": "Both phrases are in the \"{topic}\" cluster. They are semantically close.",
+    "diffCluster": "These phrases belong to different topics: \"{a}\" and \"{b}\". They are semantically distant.",
+    "keywordMismatch": "Although semantically close, their keyword overlap is low. This shows how keyword matching misses related concepts expressed in different words.",
+    "spatialProximity": "Despite different topics, these phrases have some spatial proximity. Real embeddings can produce such false neighbors — visually close but contextually unrelated.",
+    "keywordFalsePositive": "These phrases share character patterns despite belonging to different topics. Keyword matching can produce false positives.",
+    "topic_ai": "AI & ML",
+    "topic_programming": "Programming",
+    "topic_travel": "Travel",
+    "topic_cooking": "Cooking",
+    "topic_productivity": "Productivity"
+  },
+  "VectorSearch": {
+    "searchResults": "Search Results ({count})",
+    "topK": "topK: {k}",
+    "threshold": "Threshold: {t}%",
+    "diffTopic": "DIFF TOPIC",
+    "sameTopic": "SAME TOPIC",
+    "retrieved": "Retrieved ({count})",
+    "belowThreshold": "Below threshold ({count})",
+    "more": "+{count} more below threshold",
+    "noResults": "No results above threshold. Try lowering the threshold.",
+    "topKLabel": "TopK: {k}",
+    "topKHintLow": "Too low — may miss relevant neighbors",
+    "topKHintHigh": "Too high — includes distant, less relevant items",
+    "topKHintGood": "Good retrieval breadth",
+    "thresholdLabel": "Threshold: {t}%",
+    "thresholdHintHigh": "Too strict — excludes moderately similar items",
+    "thresholdHintLow": "Too loose — includes almost everything",
+    "thresholdHintGood": "Balanced filter"
+  },
+  "ContextWindow": {
+    "contextMeter": "Context Meter",
+    "tokensUnit": "tokens",
+    "tokensUsed": "{used} / {total} tokens",
+    "inContext": "In Context ({count})",
+    "excluded": "Excluded ({count})",
+    "tokensUsedLabel": "{n} tokens used",
+    "overCapacity": "Over capacity",
+    "finalPrompt": "Final Prompt",
+    "noFit": "No blocks fit in context",
+    "summarized": "History (summarized)",
+    "essential": "ESSENTIAL",
+    "lost": "LOST",
+    "excludedBadge": "EXCLUDED",
+    "essentialExcluded": "Essential block excluded!",
+    "excludedSummary": "{count} block(s) excluded",
+    "legendBlocksInContext": "blocks in context",
+    "legend": {
+      "system": "system",
+      "history": "history",
+      "retrieved": "retrieved",
+      "tools": "tools",
+      "memory": "memory",
+      "query": "query",
+      "noise": "noise",
+      "dashed": "dashed = excluded"
+    },
+    "controls": {
+      "contextSize": "Context size: {size} tokens",
+      "contextSizeHintTight": "Very tight — likely to overflow",
+      "contextSizeHintLarge": "Plenty of room for context",
+      "contextSizeHintStandard": "Standard context window",
+      "historyCount": "Chat history: {count} messages",
+      "historyCountHintHigh": "Too much history — risks pushing out important content",
+      "historyCountHintModerate": "Moderate history",
+      "historyCountHintLow": "Minimal history",
+      "noiseBlocks": "Noise blocks: {count}",
+      "noiseBlocksHintHigh": "Lots of noise — wasting context space",
+      "noiseBlocksHintSome": "Some irrelevant content",
+      "noiseBlocksHintClean": "Clean context",
+      "summarization": "Summarization",
+      "summarizationOn": "On — history is summarized",
+      "summarizationOff": "Off — raw history preserved",
+      "summarizationHintOn": "History compressed — saves space",
+      "summarizationHintOff": "Raw history — uses more tokens"
+    },
+    "presets": {
+      "goodContext": "Good context",
+      "goodContextDesc": "Balanced context — everything fits with room to spare.",
+      "contextOverflow": "Context overflow",
+      "contextOverflowDesc": "History + retrieved docs overflow context — user query and last docs get excluded.",
+      "lostInstructions": "Lost instructions",
+      "lostInstructionsDesc": "Too much history pushes out the system prompt — model loses its instructions.",
+      "historyFlood": "History flood",
+      "historyFloodDesc": "Excessive history fills context — retrieved docs get excluded even with large window.",
+      "summarizationHelps": "Summarization helps",
+      "summarizationHelpsDesc": "With summarization enabled, history is compressed — everything fits even with limited context."
+    }
+  },
+  "RagData": {
+    "documents": {
+      "doc-vec-db": {
+        "title": "Vector Database Architecture Guide",
+        "content": "Vector databases store high-dimensional embeddings and enable efficient similarity search. The most common index types include HNSW (Hierarchical Navigable Small World) and IVF (Inverted File Index). HNSW builds a multi-layer graph where each layer skips more nodes, providing logarithmic search complexity. IVF partitions the vector space into clusters and searches only the nearest clusters. For production deployments, consider using HNSW for low-latency applications and IVF for memory-constrained environments. Similarity metrics matter: cosine similarity works well for text embeddings, while Euclidean distance suits image embeddings. Quantization techniques like product quantization can reduce memory usage by 4-8x with minimal accuracy loss. Always benchmark your index against your specific data distribution before deploying."
+      },
+      "doc-embedding": {
+        "title": "Embedding Model Selection Guide",
+        "content": "Choosing the right embedding model depends on your domain and task. General-purpose models like text-embedding-3-small work well for most use cases, while domain-specific models outperform on specialized content. Key factors include embedding dimension (256 to 3072), supported languages, and maximum token length. Higher dimensions capture more semantic nuance but increase storage and search costs. The MTEB benchmark provides standardized evaluation across clustering, classification, and retrieval tasks. For multilingual applications, models supporting 100+ languages are available. Consider fine-tuning on your domain data for significant quality improvements, especially for technical or medical content. Embedding quality directly impacts retrieval quality in RAG systems."
+      },
+      "doc-rag": {
+        "title": "RAG Implementation Best Practices",
+        "content": "Retrieval-Augmented Generation combines search with generation to ground LLM outputs in external documents. The pipeline consists of document ingestion, chunking, embedding, indexing, retrieval, and context assembly. Chunk size is critical: too small loses context, too large dilutes relevance. A good starting point is 300-500 tokens per chunk with 10-20% overlap. Semantic chunking based on paragraph or section boundaries often outperforms fixed-size splitting. The retrieval stage uses vector similarity search to find relevant chunks, typically returning top 3-10 results. Reranking with a cross-encoder model can significantly improve retrieval precision by rescoring initial candidates. The final context must fit within the model's context window alongside the system prompt and conversation history."
+      },
+      "doc-context": {
+        "title": "Context Window Optimization Strategies",
+        "content": "The context window limits how much information a model can process in a single request. Modern models support 8K to 200K+ tokens, but longer contexts increase latency, cost, and the risk of attention dilution where the model fails to focus on relevant information. Effective strategies include: prioritizing recent conversation turns, summarizing older history, truncating low-relevance retrieved chunks, and using a sliding window approach for long documents. Token counting matters: always estimate the system prompt, user message, retrieved chunks, and tool results before sending. If important instructions get pushed out of context, the model may ignore constraints. Context overflow is a common failure mode in RAG systems when too many chunks are retrieved."
+      },
+      "doc-tool-calling": {
+        "title": "Tool Calling Specification",
+        "content": "Tool calling (function calling) lets the model request execution of predefined functions by generating structured JSON arguments. Each tool definition includes a name, description, and JSON Schema for parameters. The model selects a tool based on the user's request and the tool descriptions, so descriptions must be clear and specific. Vague descriptions cause wrong tool selection, while overly similar tools confuse the model. The application, not the model, executes the tool and returns the result. Always validate tool arguments before execution, especially for destructive operations. Consider human approval for sensitive actions like sending emails or modifying data. Tool errors should be returned to the model with clear error messages so it can retry or ask for clarification."
+      }
+    },
+    "queries": {
+      "chunk-size": { "label": "How to choose chunk size?", "query": "How do I choose the right chunk size for my documents?" },
+      "rag-best-practices": { "label": "RAG best practices", "query": "What are the best practices for implementing RAG?" },
+      "vector-search": { "label": "How vector search works", "query": "How does vector similarity search work in production?" },
+      "context-limit": { "label": "Context window limits", "query": "What happens when the context window overflows?" },
+      "tool-definition": { "label": "Define tool calling", "query": "How should I define tools and their parameters?" },
+      "embedding-choice": { "label": "Choose embedding model", "query": "Which embedding model should I use for my application?" }
+    },
+    "answers": {
+      "noContext": "I don't have enough context to answer this question. No relevant documents were retrieved or they were excluded due to context overflow.",
+      "noRelevant": "I couldn't find relevant information to answer this question. The retrieved documents don't appear to contain the information you're looking for. Try a different query or check if your documents cover this topic.",
+      "partialNoisy": "Based on the available context, I can provide a partial answer. However, some retrieved documents appear unrelated to your question. The relevant information suggests general approaches, but I recommend retrieving cleaner results for a complete answer.",
+      "overflow": "The context window overflowed and some potentially relevant chunks were excluded. Based on what's available: chunk size selection depends on your use case. Smaller chunks provide precision but risk losing context. Larger chunks retain context but may dilute relevance. Without the excluded chunks, this answer may be incomplete.",
+      "chooseChunkSize": "Choosing the right chunk size requires balancing precision and context. A good starting point is 300-500 tokens per chunk with 10-20% overlap. Too small chunks lose surrounding context and may fragment key information. Too large chunks dilute relevance by mixing unrelated content. Semantic chunking by paragraph or section boundaries often works better than fixed-size splitting. For technical documentation, larger chunks (400-600 tokens) preserve code examples and their explanations together. For FAQ-style content, smaller chunks (200-300 tokens) work well since each answer is self-contained.",
+      "ragBestPractices": "For effective RAG implementation, start with semantic chunking at 300-500 tokens per chunk. Store embeddings in a vector database using cosine similarity for text. Retrieve top 3-10 relevant chunks using vector search. Consider adding a cross-encoder reranking step to improve precision — it typically boosts relevance by 15-30%. Always monitor context usage: the retrieved chunks compete with system prompts and conversation history for context space. Most importantly, evaluate retrieval quality with your actual queries and documents, not just benchmarks.",
+      "vectorSearch": "Vector similarity search in production uses approximate nearest neighbor algorithms like HNSW or IVF. HNSW provides fast logarithmic search by building a multi-layer graph — each layer skips more nodes for efficient traversal. IVF partitions the vector space into clusters and searches only nearby clusters, trading some accuracy for lower memory. For text embeddings, use cosine similarity as the distance metric. Quantization techniques can reduce memory usage 4-8x with minimal accuracy loss. Always benchmark on your specific data distribution.",
+      "contextOverflow": "When the context window overflows, content is truncated from the beginning — older messages, instructions, or early retrieved chunks get dropped. This is dangerous because the system prompt (which contains critical instructions) is typically placed first and may be pushed out. Key strategies: prioritize recent conversation turns, summarize older history into compressed form, use a sliding window for long documents, and estimate all token usage before sending. If the model suddenly ignores constraints, context overflow is often the cause.",
+      "toolCalling": "For effective tool calling, write clear and specific tool descriptions. Each tool needs a name, a description that explains when to use it, and a JSON Schema for parameters with types, descriptions, and required fields. Vague descriptions cause wrong tool selection. Tools with similar descriptions confuse the model — differentiate them clearly. The application executes the tool, not the model. Always validate arguments before execution and consider human approval for destructive operations. Return clear error messages to the model so it can retry with corrected arguments.",
+      "embeddingChoice": "Selecting an embedding model depends on your domain, language requirements, and performance needs. General-purpose models work well for most applications. Domain-specific models outperform on specialized content like medical or legal text. Key considerations: embedding dimension (256 to 3072), supported languages, and max token length. Higher dimensions capture more nuance but increase storage costs. The MTEB benchmark provides standardized comparisons. For RAG, embedding quality directly impacts retrieval quality — poor embeddings lead to poor retrieval regardless of the search algorithm.",
+      "default": "Based on the retrieved context, I can provide relevant information about your question. The key factors to consider are: the quality of your data, the appropriateness of your retrieval settings, and the constraints of the context window. For optimal results, ensure your chunking strategy preserves context, your retrieval settings return sufficiently many relevant results, and your context window has enough space for both your instructions and the retrieved content."
+    },
+    "failureModes": {
+      "chunk-too-large": { "title": "Chunk too large", "description": "Large chunks include irrelevant content, diluting the relevant signal in the context.", "explanation": "When chunks are too large, the model must process irrelevant text alongside useful information, reducing answer quality." },
+      "chunk-too-small": { "title": "Chunk too small", "description": "Small chunks lose surrounding context. A single sentence rarely contains the full answer.", "explanation": "The model sees isolated fragments without the context needed to understand them properly." },
+      "topk-too-low": { "title": "TopK too low", "description": "Retrieving too few chunks misses relevant information from other documents.", "explanation": "When TopK is 1, any single chunk may not contain the complete answer, even if it's highly relevant." },
+      "topk-too-high": { "title": "TopK too high", "description": "Too many chunks fill the context with marginally relevant content, pushing out more important information.", "explanation": "The model wastes context space on chunks with low relevance, reducing room for the system prompt and conversation history." },
+      "noisy-retrieval": { "title": "Noisy retrieval", "description": "Irrelevant chunks pollute the context. The model may use wrong information to answer.", "explanation": "Noise documents are chunks that score well by coincidence but contain unrelated content. They mislead the model." },
+      "context-overflow": { "title": "Context overflow", "description": "When the context limit is reached, additional chunks are excluded — even relevant ones.", "explanation": "Important instructions or retrieved chunks may be dropped, causing the model to ignore constraints or miss key information." }
+    }
+  },
+  "ToolCalling": {
+    "pipeline": {
+      "request": "Request",
+      "received": "received",
+      "toolSelection": "Tool Selection",
+      "arguments": "Arguments",
+      "generated": "generated",
+      "approval": "Approval",
+      "approved": "approved",
+      "pending": "pending",
+      "execution": "Execution",
+      "success": "success",
+      "error": "error",
+      "result": "Result",
+      "returned": "returned",
+      "waiting": "waiting"
+    },
+    "tools": {
+      "title": "Available Tools ({count})",
+      "vagueDescriptions": "VAGUE DESCRIPTIONS",
+      "destructive": "DESTRUCTIVE",
+      "selected": "SELECTED",
+      "searchDocs": "Search the internal knowledge base for documents matching a query string. Returns top results with relevance scores.",
+      "searchDocsBad": "Searches stuff and finds things. Returns whatever it finds.",
+      "sendEmail": "Send an email to one or more recipients. Supports subject, body, and CC fields. Requires explicit confirmation for external recipients.",
+      "sendEmailBad": "Sends messages. Good for communication.",
+      "queryDb": "Run a read-only SQL query against the application database. Only SELECT queries are allowed. Results are returned as JSON.",
+      "queryDbBad": "Runs database commands and returns data.",
+      "createTicket": "Create a support ticket in the issue tracking system. Requires a title, description, and priority level.",
+      "createTicketBad": "Makes a new ticket for tracking problems.",
+      "getWeather": "Get current weather conditions for a specified city. Returns temperature, humidity, wind speed, and conditions.",
+      "getWeatherBad": "Gets weather information for places."
+    },
+    "arguments": {
+      "title": "Generated Arguments",
+      "noArgs": "No arguments extracted",
+      "missingRequired": "Missing required parameters: {params}",
+      "json": "JSON Arguments"
+    },
+    "result": {
+      "title": "Tool Result",
+      "selectFirst": "Select a tool and execute to see results",
+      "success": "SUCCESS",
+      "error": "ERROR",
+      "approveAction": "This action will: send email to recipients",
+      "approveActionGeneric": "Execute the tool",
+      "errorTitle": "Error"
+    },
+    "controls": {
+      "userRequest": "User Request",
+      "badDescriptions": "Bad descriptions",
+      "badDescriptionsDesc": "Vague tool descriptions cause wrong selection",
+      "similarTools": "Similar tools",
+      "similarToolsDesc": "Adds a confusingly similar tool",
+      "requireApproval": "Require approval",
+      "requireApprovalDesc": "Destructive actions need human confirmation",
+      "simulateError": "Simulate error",
+      "simulateErrorDesc": "Tool returns an error instead of result",
+      "on": "ON",
+      "off": "OFF"
+    },
+    "presets": {
+      "goodToolCall": "Good tool call",
+      "goodToolCallDesc": "Clear descriptions, correct tool selected, successful execution.",
+      "badDescription": "Bad description",
+      "badDescriptionDesc": "Vague tool descriptions cause wrong tool selection.",
+      "similarTools": "Similar tools",
+      "similarToolsDesc": "Two similar tools (search_documents vs search_files) confuse the model.",
+      "needApproval": "Needs approval",
+      "needApprovalDesc": "Sending an email requires human approval before execution.",
+      "toolError": "Tool error",
+      "toolErrorDesc": "The selected tool returns an error — model must handle it gracefully."
+    }
+  },
+  "ContextWindowData": {
+    "systemPrompt": {
+      "label": "System Prompt",
+      "content": "You are a helpful AI assistant. Answer questions using the provided context. If the context does not contain enough information, say so. Be concise and accurate."
+    },
+    "history": {
+      "hist-1": "User: What's the weather like?\nAssistant: I don't have real-time weather access.",
+      "hist-2": "User: Can you help me find vector database docs?\nAssistant: Sure, I'll search the knowledge base.",
+      "hist-3": "User: How do I optimize PostgreSQL queries?\nAssistant: Use indexes, avoid SELECT *, use EXPLAIN ANALYZE, and consider partitioning for large tables.",
+      "hist-4": "User: What about connection management?\nAssistant: Use a connection pool like pg-pool or pgBouncer. Set max connections based on your CPU cores.",
+      "hist-5": "User: Any tips for Node.js specifically?\nAssistant: Use async/await with try/catch. Never use pg's client directly in production — always use a pool.",
+      "hist-6": "User: How about monitoring?\nAssistant: Use pg_stat_statements extension. Track slow queries with EXPLAIN ANALYZE logs. Set up alerting for connection count.",
+      "hist-7": "User: What indexing strategy for JSON columns?\nAssistant: Use GIN indexes with jsonb_path_ops for JSON querying. For specific fields, create expression indexes.",
+      "hist-8": "User: Migration strategy for large tables?\nAssistant: Use pt-online-schema-change or pgroll for zero-downtime migrations. Never run ALTER TABLE directly on large production tables.",
+      "hist-9": "User: Backup strategy?\nAssistant: Use pg_dump for logical backups and WAL archiving for PITR. Schedule daily full + hourly incremental with pgBackRest.",
+      "hist-10": "User: Replication setup?\nAssistant: Use streaming replication with at least one synchronous standby. Consider logical replication for partial data sync between environments.",
+      "hist-11": "User: What about sharding?\nAssistant: PostgreSQL supports partitioning natively. For horizontal scaling, consider Citus extension. Most apps don't need sharding before 500GB+.",
+      "hist-12": "User: Any security best practices?\nAssistant: Use row-level security, TLS for connections, restrict network access with pg_hba.conf, and never expose the database to the public internet.",
+      "hist-13": "User: Caching layer recommendations?\nAssistant: Use Redis for hot data. Implement cache-aside pattern. Consider PostgreSQL's LISTEN/NOTIFY for cache invalidation across instances.",
+      "hist-14": "User: How about ORM vs raw SQL?\nAssistant: Use raw SQL for complex queries and migrations. ORMs are fine for simple CRUD. Drizzle and Knex give you type safety without the ORM overhead.",
+      "hist-15": "User: Testing with databases?\nAssistant: Use transactional tests that roll back. Consider Testcontainers for integration tests. Mock at the repository layer for unit tests. Never test against production."
+    },
+    "retrieved": {
+      "doc-1": {
+        "label": "Retrieved: Pooling Guide",
+        "content": "Connection pooling is critical for PostgreSQL performance. Use pg-pool with Node.js and set max connections to 2-4x CPU cores. Monitor idle connections and set connection timeouts to prevent leaks. pgBouncer in transaction mode provides the best throughput for web applications."
+      },
+      "doc-2": {
+        "label": "Retrieved: Node.js PG Best Practices",
+        "content": "Never create a new Client for each request. Always use a Pool. Handle connection errors with retry logic. Use parameterized queries to prevent SQL injection. Set statement_timeout to prevent long-running queries from blocking the pool. Consider using pg-native for 10-15% performance improvement."
+      },
+      "doc-3": {
+        "label": "Retrieved: Connection Management",
+        "content": "For microservices, use a dedicated pool per service with conservative max connections. Implement circuit breakers for database calls. Use health checks to detect stale connections. Log slow queries and set up alerts for connection count nearing max. Consider read replicas for read-heavy workloads."
+      }
+    },
+    "noise": {
+      "noise-1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "noise-2": "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!",
+      "noise-3": "To be or not to be, that is the question. Whether tis nobler in the mind to suffer the slings and arrows of outrageous fortune.",
+      "noise-4": "All happy families are alike; each unhappy family is unhappy in its own way. Everything was in confusion in the Oblonskys house.",
+      "noise-5": "It was a bright cold day in April, and the clocks were striking thirteen. Winston Smith, his chin nuzzled into his breast, slipped quickly through the glass doors."
+    },
+    "toolResult": {
+      "label": "Tool Result",
+      "content": "{\n  \"active_connections\": 47,\n  \"max_connections\": 100,\n  \"pool_utilization\": \"47%\",\n  \"avg_query_time_ms\": 12.4,\n  \"slow_queries_last_hour\": 3,\n  \"recommendation\": \"Increase max connections to 150 or add pgBouncer\"\n}"
+    },
+    "memory": {
+      "label": "Memory",
+      "content": "User is a backend developer working with Node.js and PostgreSQL. Prefers TypeScript. Currently building a microservice architecture. Has production experience but is new to connection pooling optimization."
+    },
+    "userQuery": "What's the best way to handle connection pooling in PostgreSQL with Node.js?",
+    "summarized": "[Previous {count} messages summarized]: User asked about PostgreSQL optimization, connection management, monitoring, indexing, migrations, backups, replication, security, caching, ORMs, and testing."
+  },
+  "ToolCallingData": {
+    "errorMessages": {
+      "search_docs": "Search index is currently rebuilding. Please try again in a few minutes.",
+      "send_email": "SMTP server connection refused. The email service is temporarily unavailable.",
+      "query_db": "Query timeout after 30 seconds. The database is experiencing high load. Simplify your query.",
+      "create_ticket": "Ticket system API returned 503. The issue tracker is down for maintenance.",
+      "get_weather": "Weather API rate limit exceeded. You have made too many requests. Please wait before retrying.",
+      "default": "Tool execution failed due to an internal server error."
+    },
+    "fallbackArgs": {
+      "unknownCity": "Unknown",
+      "defaultEmail": "user@example.com",
+      "defaultSubject": "Update",
+      "defaultBody": "The new version has been deployed and is now live.",
+      "defaultBodyGeneric": "Here is the information you requested.",
+      "defaultTicketTitle": "Users unable to log in — Invalid session token error",
+      "defaultTicketTitleGeneric": "Issue reported by user",
+      "defaultTicketDesc": "After the latest update, users report getting 'Invalid session token' error when trying to log in.",
+      "defaultTicketDescGeneric": "User reported an issue that needs investigation.",
+      "high": "high",
+      "medium": "medium",
+      "defaultPath": "/documents"
+    }
+  }
+}
