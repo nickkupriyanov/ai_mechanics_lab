@@ -6,13 +6,15 @@ export type ConceptSlug =
   | "tool-calling"
   | "agents"
   | "mcp"
-  | "memory";
+  | "memory"
+  | "prompt-injection"
+  | "evaluation";
 
 export type FutureConceptSlug = never;
 
 export type ConceptLevel = "basics" | "knowledge" | "agentic" | "reliability";
 
-export type ConceptGroup = "basics" | "knowledge" | "agentic";
+export type ConceptGroup = "basics" | "knowledge" | "agentic" | "reliability";
 
 export type ConceptStatus = "available" | "planned";
 

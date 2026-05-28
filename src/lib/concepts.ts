@@ -97,6 +97,30 @@ export const concepts: Concept[] = [
     color: "#14b8a6",
     relatedConcepts: ["tool-calling", "agents"],
   },
+  {
+    slug: "prompt-injection",
+    title: "Prompt Injection",
+    shortDescription:
+      "When untrusted content enters the model's context, it can override instructions. Retrieved documents, user input, and tool results can all be attack vectors.",
+    level: "reliability",
+    group: "reliability",
+    order: 9,
+    status: "available",
+    color: "#f97316",
+    relatedConcepts: ["rag", "context-window", "tool-calling"],
+  },
+  {
+    slug: "evaluation",
+    title: "Evaluation",
+    shortDescription:
+      "Systematic testing of AI outputs. Define test cases, expected behavior, scoring criteria — then detect regressions when outputs degrade.",
+    level: "reliability",
+    group: "reliability",
+    order: 10,
+    status: "available",
+    color: "#06b6d4",
+    relatedConcepts: ["prompt-injection", "rag", "tool-calling"],
+  },
 ];
 
 export function getConcept(slug: string): Concept | undefined {

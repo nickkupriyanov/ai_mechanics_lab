@@ -4,7 +4,7 @@
 
 **Phases 1–7 + i18n + Agents/MCP/Memory are completed.**
 
-The project has 8 interactive scenes, full Russian/English localization, 51 unit tests, and SSG deployment-ready build.
+The project has 9 interactive scenes, full Russian/English localization, 51+ unit tests, and SSG deployment-ready build.
 
 Current strategic focus:
 
@@ -26,9 +26,10 @@ Core product idea:
 - [x] Phase 7 — Polish: responsive, 51 tests, animations, SEO
 - [x] Full i18n: `next-intl`, 2 locales (ru/en), 300+ translation keys
 - [x] Agents, MCP, Memory scenes (3 concepts, 12 components, 12 presets)
+- [x] Prompt Injection scene (1 concept, 6 components, 4 presets)
 - [x] Simulation data translated: documents, chat history, tool descriptions, memory snippets
 
-## 8 Available Concepts
+## 9 Available Concepts
 
 | # | Concept | Route | Level |
 |---|---|---|---|
@@ -40,6 +41,7 @@ Core product idea:
 | 6 | Agents | `/concepts/agents` | agentic |
 | 7 | Memory | `/concepts/memory` | agentic |
 | 8 | MCP | `/concepts/mcp` | agentic |
+| 9 | Prompt Injection | `/concepts/prompt-injection` | reliability |
 
 ---
 
