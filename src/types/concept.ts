@@ -8,7 +8,8 @@ export type ConceptSlug =
   | "mcp"
   | "memory"
   | "prompt-injection"
-  | "evaluation";
+  | "evaluation"
+  | "guardrails";
 
 export type FutureConceptSlug = never;
 

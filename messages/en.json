@@ -50,7 +50,8 @@
     "mcp": { "title": "MCP", "shortDescription": "Model Context Protocol is a standard bridge between AI clients and external tools. It standardizes how AI discovers and uses capabilities." },
     "memory": { "title": "Memory", "shortDescription": "Memory is stored information retrieved later into the context. It is not the same as the model permanently knowing something." },
     "prompt-injection": { "title": "Prompt Injection", "shortDescription": "When untrusted content enters the model's context, it can override system instructions. Retrieved documents, user input, and tool results can all be attack vectors." },
-    "evaluation": { "title": "Evaluation", "shortDescription": "Systematic testing of AI outputs. Define test cases, expected behavior, scoring criteria — then detect regressions when outputs degrade." }
+    "evaluation": { "title": "Evaluation", "shortDescription": "Systematic testing of AI outputs. Define test cases, expected behavior, scoring criteria — then detect regressions when outputs degrade." },
+    "guardrails": { "title": "Guardrails", "shortDescription": "Input and output filters that protect AI applications from harmful content, off-topic responses, and policy violations — before and after the model." }
   },
   "Shared": {
     "simulated": "Simulated",
@@ -273,6 +274,25 @@
         "Over-reliance on single scenario: a model that passes customer support tests may fail code generation — you need scenario coverage."
       ],
       "realWorldUsage": "Evaluation is the backbone of LLM quality assurance. Teams use evaluation frameworks to gate model updates, compare providers (GPT-4 vs Claude vs Gemini), and ensure safety compliance. Tools like Braintrust, LangSmith, and custom Eval Harnesses run test suites before every deployment. Without systematic evaluation, you are deploying AI features blind — hoping they work well rather than knowing they do."
+    },
+    "guardrails": {
+      "whatIsHappening_steps": [
+        "The user types a message — before it reaches the model, the input guard scans it for policy violations.",
+        "Each content category (hate speech, PII, off-topic, etc.) is checked against the enabled rules and strictness level.",
+        "If violations exceed the strictness threshold, the input is blocked entirely — the model never sees it.",
+        "If input passes, the model generates a response normally.",
+        "Before the response reaches the user, the output guard scans it — checking for PII leaks, harmful code, sensitive data.",
+        "If violations are found, the output is either flagged, sanitized (redacted), or blocked — protecting the user from harmful or policy-violating content."
+      ],
+      "whatIsHappening_summary": "Guardrails are not part of the model itself. They are external filters that inspect content before and after the model. The model never sees blocked input, and the user never sees flagged output. Together they act as a safety net around the AI system.",
+      "howItBreaks": [
+        "Missing categories: if you only guard against hate speech but not PII, sensitive personal data leaks through — the output guard has a blind spot.",
+        "Wrong strictness: permissive mode lets borderline content through; strict mode blocks useful content for minor infractions.",
+        "Input guard disabled: prompt injection and harmful requests bypass the model entirely — the model executes malicious instructions.",
+        "Output guard disabled: the model generates harmful code or leaks PII with no filter — all output reaches the user unchecked.",
+        "Strict mode on all: blocking all categories blocks legitimate conversation — users cannot ask questions that slightly touch monitored topics."
+      ],
+      "realWorldUsage": "Guardrails are used in production AI systems everywhere. OpenAI's moderation API, Anthropic's safety classifiers, and custom guard layers in enterprise chatbots all implement input/output filtering. Microsoft's Azure AI Content Safety, Guardrails AI (open source), and NVIDIA NeMo Guardrails are dedicated guardrail frameworks. Every responsible AI deployment needs guardrails — without them, the model is a direct pipeline from user input to user output with no safety net."
     },
     "placeholder": {
       "whatIsHappening": "This concept page will include an interactive visual simulation that shows exactly how {title} works in AI systems. You will be able to change parameters, observe results, and understand the mechanics.",
@@ -947,7 +967,105 @@
         "c1": "Can you make most tests fail by switching to strict mode?",
         "c2": "Can you detect regressions against a higher baseline?",
         "c3": "Can you find a scenario where everything passes?"
+      },
+      "guardrails": {
+        "c1": "Can you bypass the input guard and let an injection through?",
+        "c2": "Can you let PII leak by disabling the output guard?",
+        "c3": "Can you block harmless content with strict mode?"
       }
+    }
+  },
+  "Guardrails": {
+    "pipeline": {
+      "userInput": "User Input",
+      "inputGuard": "Input Guard",
+      "model": "Model",
+      "outputGuard": "Output Guard",
+      "response": "Response",
+      "pass": "PASS",
+      "blocked": "BLOCKED",
+      "flagged": "FLAGGED",
+      "sanitized": "SANITIZED",
+      "warning": "WARNING",
+      "disabled": "DISABLED"
+    },
+    "input": {
+      "title": "Input Guard",
+      "userInputLabel": "User Input",
+      "scanReport": "Scan Report",
+      "inputGuardDisabled": "Input Guard Disabled",
+      "inputGuardDisabledDesc": "Input guard is turned off — all user input passes through directly to the model with no scanning.",
+      "clean": "Clean Input",
+      "cleanDesc": "No violations detected — input passed through all guard checks. Sent to model.",
+      "blocked": "BLOCKED — Not Sent to Model",
+      "blockedDesc": "Input guard detected violations above the strictness threshold. Content is blocked and the model never sees this input.",
+      "warning": "Warning — Passed with Flags",
+      "warningDesc": "Low-severity flags detected but below strictness threshold. Input passed to model with warnings logged.",
+      "passed": "PASSED — Sent to Model",
+      "passedDesc": "Input passed all guard checks. No violations detected across any enabled category."
+    },
+    "output": {
+      "title": "Output Guard",
+      "modelResponseLabel": "Model Response",
+      "scanReport": "Scan Report",
+      "outputGuardDisabled": "Output Guard Disabled",
+      "outputGuardDisabledDesc": "Output guard is turned off — all model output passes through to the user with no scanning.",
+      "noResponse": "No model response generated — input was blocked by the input guard.",
+      "noOutput": "No Output",
+      "noOutputDesc": "Model didn't produce a response — nothing to scan.",
+      "clean": "Clean Output",
+      "cleanDesc": "No violations detected — output passed through all guard checks. Sent to user.",
+      "flagged": "FLAGGED — Response Blocked",
+      "flaggedDesc": "Output guard detected violations above the strictness threshold. Response is flagged and may be redacted or blocked.",
+      "sanitized": "SANITIZED — Sensitive Data Redacted",
+      "sanitizedDesc": "PII or sensitive data detected in the output. The response was automatically redacted before sending to the user.",
+      "passed": "PASSED — Sent to User",
+      "passedDesc": "Output passed all guard checks. No violations detected across any enabled category.",
+      "sanitizedComparison": "Sanitized Response (After Redaction)"
+    },
+    "controls": {
+      "scenario": "Scenario",
+      "scenarios": {
+        "hate-speech": "Hate Speech",
+        "pii-leak": "PII Leak",
+        "injection": "Prompt Injection",
+        "harmful-code": "Harmful Code",
+        "off-topic": "Off-Topic Request",
+        "all-clear": "All Clear"
+      },
+      "guardInput": "Input Guard",
+      "guardOutput": "Output Guard",
+      "guardBoth": "Both Guards",
+      "strictness": "Strictness",
+      "permissive": "Permissive",
+      "standard": "Standard",
+      "strict": "Strict",
+      "strictnessPermissiveHint": "Catches only critical violations — most content passes.",
+      "strictnessStandardHint": "Catches high and medium severity — balanced filtering.",
+      "strictnessStrictHint": "Catches everything — even low-severity flags trigger blocks.",
+      "guardsTitle": "Guards",
+      "inputGuard": "Input Guard",
+      "inputGuardOn": "Scanning user input before model sees it.",
+      "inputGuardOff": "Input guard OFF — all content passes to model unchecked.",
+      "outputGuard": "Output Guard",
+      "outputGuardOn": "Scanning model output before user sees it.",
+      "outputGuardOff": "Output guard OFF — model responses reach user unchecked.",
+      "on": "ON",
+      "off": "OFF",
+      "categories": "Categories",
+      "checked": "ON",
+      "unchecked": "OFF",
+      "enableAll": "Enable All Categories"
+    },
+    "presets": {
+      "open": "Open",
+      "openDesc": "Permissive mode, all categories enabled — most content passes through.",
+      "locked": "Locked",
+      "lockedDesc": "Strict mode, all categories enabled — even borderline content gets blocked.",
+      "noInput": "No Input Guard",
+      "noInputDesc": "Input guard OFF — prompt injection and harmful requests bypass the model.",
+      "noOutput": "No Output Guard",
+      "noOutputDesc": "Output guard OFF — PII and harmful code leak to the user."
     }
   },
   "PromptInjection": {

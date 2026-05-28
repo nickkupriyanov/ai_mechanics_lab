@@ -29,7 +29,7 @@ Core product idea:
 - [x] Prompt Injection scene (1 concept, 6 components, 4 presets)
 - [x] Simulation data translated: documents, chat history, tool descriptions, memory snippets
 
-## 9 Available Concepts
+## 11 Available Concepts
 
 | # | Concept | Route | Level |
 |---|---|---|---|
@@ -42,6 +42,8 @@ Core product idea:
 | 7 | Memory | `/concepts/memory` | agentic |
 | 8 | MCP | `/concepts/mcp` | agentic |
 | 9 | Prompt Injection | `/concepts/prompt-injection` | reliability |
+| 10 | Evaluation | `/concepts/evaluation` | reliability |
+| 11 | Guardrails | `/concepts/guardrails` | reliability |
 
 ---
 
@@ -151,10 +153,7 @@ Try to break it:
 
 # Phase 13+ — Future Concepts (Optional)
 
-After the current 8 concepts are polished:
-- **Prompt Injection** — malicious content in retrieved documents
-- **Evaluation** — testing AI outputs systematically
-- **Guardrails** — input/output filtering
+After the current 11 concepts are polished:
 - **Real AI mode** — optional OpenAI/Anthropic API integration
 
 ---

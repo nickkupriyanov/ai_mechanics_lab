@@ -11,6 +11,7 @@ import { AgentsScene } from "@/components/scenes/agents/AgentsScene";
 import { MemoryScene } from "@/components/scenes/memory/MemoryScene";
 import { PromptInjectionScene } from "@/components/scenes/prompt-injection/PromptInjectionScene";
 import { EvaluationScene } from "@/components/scenes/evaluation/EvaluationScene";
+import { GuardrailsScene } from "@/components/scenes/guardrails/GuardrailsScene";
 import { SceneShell } from "@/components/shared/SceneShell";
 import { BreakItChallenges } from "@/components/shared/BreakItChallenges";
 import { getChallenges } from "@/lib/challenges";
@@ -24,6 +25,7 @@ import { useMemoryStore } from "@/store/memory-store";
 import { useMCPStore } from "@/store/mcp-store";
 import { usePromptInjectionStore } from "@/store/prompt-injection-store";
 import { useEvaluationStore } from "@/store/evaluation-store";
+import { useGuardrailsStore } from "@/store/guardrails-store";
 
 function applyPreset(slug: ConceptSlug, presetId: string) {
   switch (slug) {
@@ -50,6 +52,9 @@ function applyPreset(slug: ConceptSlug, presetId: string) {
       break;
     case "evaluation":
       useEvaluationStore.getState().applyPreset(presetId);
+      break;
+    case "guardrails":
+      useGuardrailsStore.getState().applyPreset(presetId);
       break;
   }
 }
@@ -92,6 +97,8 @@ export function ConceptSceneClient({ slug, title }: ConceptSceneClientProps) {
         return <PromptInjectionScene />;
       case "evaluation":
         return <EvaluationScene />;
+      case "guardrails":
+        return <GuardrailsScene />;
       default:
         return (
           <SceneShell title="Interactive Scene" simplified>

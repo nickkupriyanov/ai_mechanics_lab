@@ -55,6 +55,11 @@ const challengePresets: Record<string, Record<string, string | undefined>> = {
     c2: "regression",
     c3: "all-passing",
   },
+  guardrails: {
+    c1: "no-input",
+    c2: "no-output",
+    c3: "locked",
+  },
 };
 
 export function getChallenges(

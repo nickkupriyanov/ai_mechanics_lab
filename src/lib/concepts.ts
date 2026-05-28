@@ -121,6 +121,18 @@ export const concepts: Concept[] = [
     color: "#06b6d4",
     relatedConcepts: ["prompt-injection", "rag", "tool-calling"],
   },
+  {
+    slug: "guardrails",
+    title: "Guardrails",
+    shortDescription:
+      "Input and output filters that protect AI applications from harmful content, off-topic responses, and policy violations — before and after the model.",
+    level: "reliability",
+    group: "reliability",
+    order: 11,
+    status: "available",
+    color: "#84cc16",
+    relatedConcepts: ["prompt-injection", "evaluation"],
+  },
 ];
 
 export function getConcept(slug: string): Concept | undefined {
