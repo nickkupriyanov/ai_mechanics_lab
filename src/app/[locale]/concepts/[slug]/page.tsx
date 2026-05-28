@@ -5,7 +5,7 @@ import { getConcept, getAvailableConcepts, getRelatedConcepts } from "@/lib/conc
 import { ExplanationPanel, ExplanationSection } from "@/components/shared/ExplanationPanel";
 import { ConceptSceneClient } from "@/components/shared/ConceptSceneClient";
 import Link from "next/link";
-import type { ConceptSlug } from "@/types/concept";
+import type { ConceptSlug, Concept } from "@/types/concept";
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -97,6 +97,14 @@ export default async function ConceptPage({ params }: Props) {
           conceptTitle={concept.title}
         />
 
+        {/* Previous / Next navigation */}
+        <ConceptNav
+          currentSlug={concept.slug as ConceptSlug}
+          concepts={getAvailableConcepts()}
+          locale={locale}
+          t={t}
+        />
+
         {/* Related concepts */}
         {related.length > 0 && (
           <div className="mt-8">
@@ -117,6 +125,68 @@ export default async function ConceptPage({ params }: Props) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ConceptNav({
+  currentSlug,
+  concepts,
+  locale,
+  t,
+}: {
+  currentSlug: ConceptSlug;
+  concepts: Concept[];
+  locale: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any;
+}) {
+  const sorted = concepts
+    .filter((c) => c.status === "available")
+    .sort((a, b) => a.order - b.order);
+  const currentIndex = sorted.findIndex((c) => c.slug === currentSlug);
+  const prev = currentIndex > 0 ? sorted[currentIndex - 1] : null;
+  const next = currentIndex < sorted.length - 1 ? sorted[currentIndex + 1] : null;
+
+  return (
+    <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
+      {prev ? (
+        <Link
+          href={`/${locale}/concepts/${prev.slug}`}
+          className="group flex items-center gap-2 text-sm text-muted hover:text-primary"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          <div>
+            <span className="text-[10px] font-mono text-muted">{t("previous")}</span>
+            <p className="font-medium">{prev.title}</p>
+          </div>
+        </Link>
+      ) : (
+        <div />
+      )}
+      <div className="text-center">
+        <span className="text-[10px] font-mono text-muted">
+          {currentIndex + 1} / {sorted.length}
+        </span>
+      </div>
+      {next ? (
+        <Link
+          href={`/${locale}/concepts/${next.slug}`}
+          className="group flex items-center gap-2 text-right text-sm text-muted hover:text-primary"
+        >
+          <div>
+            <span className="text-[10px] font-mono text-muted">{t("next")}</span>
+            <p className="font-medium">{next.title}</p>
+          </div>
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      ) : (
+        <div />
+      )}
     </div>
   );
 }

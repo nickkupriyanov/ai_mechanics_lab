@@ -2,6 +2,7 @@
   "Layout": {
     "appName": "AI Mechanics Lab",
     "tagline": "Learn by breaking",
+    "about": "About",
     "concepts": "Concepts",
     "comingNext": "Coming next",
     "deerflow": "✦ Deerflow",
@@ -17,6 +18,25 @@
     "scenesSubtitle": "Each concept has a live simulation with controls and failure modes.",
     "comingNextHeading": "Coming next",
     "comingNextSubtitle": "Future topics for the lab.",
+    "whatIsThis": "What is this?",
+    "whatIsThisText": "AI Mechanics Lab is an interactive playground for understanding how modern AI systems work. Instead of reading definitions, you move controls, break simulations, inspect prompts, and see how AI concepts behave in practice.",
+    "howToUse": "How to use",
+    "howToUse1": "Pick a concept from the list below or sidebar.",
+    "howToUse2": "Move sliders and toggle settings — the scene updates immediately.",
+    "howToUse3": "Break the system — each concept has failure modes. Try the presets.",
+    "howToUse4": "Inspect the prompt preview to see what the AI model would actually receive.",
+    "whereToStart": "Where to start?",
+    "whereToStartText": "New to AI mechanics? Follow this recommended path to build understanding step by step.",
+    "pathStep1": "Learn how AI models process input and why context size matters.",
+    "pathStep2": "Understand how models select and use external tools.",
+    "pathStep3": "Discover how text becomes searchable mathematical representation.",
+    "interactiveScenes": "Interactive Scenes",
+    "groupBasics": "AI App Basics",
+    "groupBasicsDesc": "Foundational concepts every AI developer should understand.",
+    "groupKnowledge": "Knowledge Systems",
+    "groupKnowledgeDesc": "How AI systems search, retrieve, and use external information.",
+    "groupAgentic": "Agentic Systems",
+    "groupAgenticDesc": "How AI systems plan, act, remember, and connect to tools.",
     "footerLine": "A visual lab for understanding how AI systems actually work.",
     "explore": "Explore"
   },
@@ -66,6 +86,8 @@
   "Concepts": {
     "whatIsHappening": "What is happening",
     "howItBreaks": "How it breaks",
+    "previous": "Previous",
+    "next": "Next",
     "realWorldUsage": "Real-world usage",
     "relatedConcepts": "Related concepts",
     "rag": {
@@ -808,5 +830,26 @@
       "observation": "Observation:",
       "reflection": "Reflection:"
     }
+  },
+  "About": {
+    "title": "About AI Mechanics Lab",
+    "backHome": "Back to home",
+    "whatIsHeading": "What is this?",
+    "whatIsText1": "AI Mechanics Lab is an interactive visual playground for understanding how modern AI systems work. It explains concepts like RAG, embeddings, vector search, context windows, tool calling, agents, memory, and MCP through small interactive simulations.",
+    "whatIsText2": "The first version uses deterministic simulations instead of real LLM APIs. This keeps the experience fast, stable, free, and easier to understand. Real AI integrations can be added later as an optional mode.",
+    "whyHeading": "Why this project exists",
+    "whyText1": "Most AI explanations are either too abstract (\"RAG is a paradigm for augmenting generation...\") or too implementation-specific (\"Set this exact chunk size and this exact topK\"). Neither helps you build intuition about how the system behaves when things change.",
+    "whyText2": "This project bridges that gap. You can move sliders, break the system, and immediately see what happens. Understanding failures is often more valuable than understanding ideal behavior.",
+    "conceptsHeading": "Available concepts",
+    "conceptsText": "8 interactive scenes with controls, presets, failure modes, and prompt inspection.",
+    "whySimulationsHeading": "Why simulations?",
+    "whySimulationsText": "The MVP uses deterministic simulations — predefined documents, mock embeddings, scripted responses. This means no API costs, no rate limits, no randomness, and instant feedback. Everything is predictable and repeatable. It also makes the product easier to demo, test, and deploy without external dependencies.",
+    "whoHeading": "Who is this for?",
+    "audienceDevs": "Understand how AI concepts work under the hood so you can build better products.",
+    "audienceEngineers": "Build intuition about modern AI systems before diving into implementation details.",
+    "audiencePMs": "Understand the mechanics of AI products — what's possible, what breaks, and why.",
+    "audienceFounders": "Evaluate AI product ideas with a clearer mental model of how the pieces fit together.",
+    "coreIdeaHeading": "Core idea",
+    "coreIdea": "Learn AI systems by breaking them."
   }
 }

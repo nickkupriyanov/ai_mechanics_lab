@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useConceptMeta } from "@/lib/useConceptMeta";
 import type { TranslatedConcept } from "@/lib/useConceptMeta";
+import type { ConceptGroup } from "@/types/concept";
 
 function ConceptCard({ concept, index, locale }: { concept: TranslatedConcept; index: number; locale: string }) {
   const t = useTranslations("Home");
@@ -37,7 +38,6 @@ function ConceptCard({ concept, index, locale }: { concept: TranslatedConcept; i
           </h3>
           {!isAvailable && (
             <span className="shrink-0 rounded border border-border px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-muted">
-              {/* Soon — use shared key if available, fallback to concept.specific */}
             </span>
           )}
         </div>
@@ -64,10 +64,52 @@ function ConceptCard({ concept, index, locale }: { concept: TranslatedConcept; i
   );
 }
 
+function ConceptGroupSection({
+  group,
+  label,
+  description,
+  concepts,
+  startIndex,
+  locale,
+}: {
+  group: ConceptGroup;
+  label: string;
+  description: string;
+  concepts: TranslatedConcept[];
+  startIndex: number;
+  locale: string;
+}) {
+  if (concepts.length === 0) return null;
+
+  const cols = group === "basics" ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3";
+
+  return (
+    <div className="mb-10">
+      <h3 className="mb-1 text-sm font-display font-semibold text-primary">{label}</h3>
+      <p className="mb-4 text-[12px] text-muted">{description}</p>
+      <div className={`grid gap-4 ${cols}`}>
+        {concepts.map((concept, i) => (
+          <ConceptCard key={concept.slug} concept={concept} index={startIndex + i} locale={locale} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const t = useTranslations("Home");
   const locale = useLocale();
   const { available, planned } = useConceptMeta();
+
+  const basicsConcepts = available.filter((c) => c.group === "basics");
+  const knowledgeConcepts = available.filter((c) => c.group === "knowledge");
+  const agenticConcepts = available.filter((c) => c.group === "agentic");
+
+  const sorted = available
+    .filter((c) => c.status === "available")
+    .sort((a, b) => a.order - b.order);
+
+  const recommendedPath = sorted.slice(0, 3);
 
   return (
     <div className="bp-grid min-h-full">
@@ -94,48 +136,126 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Available concepts */}
+      {/* What is this? */}
       <div className="mx-auto max-w-4xl px-6 py-12">
+        <h2 className="mb-3 text-[11px] font-mono font-medium uppercase tracking-widest text-muted">
+          {t("whatIsThis")}
+        </h2>
+        <p className="max-w-2xl text-base leading-relaxed text-secondary">
+          {t("whatIsThisText")}
+        </p>
+      </div>
+
+      {/* How to use */}
+      <div className="mx-auto max-w-4xl px-6 pb-12">
+        <h2 className="mb-3 text-[11px] font-mono font-medium uppercase tracking-widest text-muted">
+          {t("howToUse")}
+        </h2>
+        <ol className="max-w-2xl space-y-3">
+          <li className="flex items-start gap-3">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-accent/5 font-mono text-xs text-accent">1</span>
+            <span className="text-sm text-secondary">{t("howToUse1")}</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-accent/5 font-mono text-xs text-accent">2</span>
+            <span className="text-sm text-secondary">{t("howToUse2")}</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-accent/5 font-mono text-xs text-accent">3</span>
+            <span className="text-sm text-secondary">{t("howToUse3")}</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-accent/5 font-mono text-xs text-accent">4</span>
+            <span className="text-sm text-secondary">{t("howToUse4")}</span>
+          </li>
+        </ol>
+      </div>
+
+      {/* Grouped concept sections */}
+      <div className="mx-auto max-w-4xl px-6 pb-8">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.4 }}
         >
           <h2 className="mb-1 text-[11px] font-mono font-medium uppercase tracking-widest text-muted">
-            {t("scenesHeading")}
+            {t("interactiveScenes")}
           </h2>
-          <p className="mb-8 text-sm text-muted">
-            {t("scenesSubtitle")}
-          </p>
         </motion.div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {available.map((concept, i) => (
-            <ConceptCard key={concept.slug} concept={concept} index={i} locale={locale} />
+        <div className="mt-8">
+          <ConceptGroupSection
+            group="basics"
+            label={t("groupBasics")}
+            description={t("groupBasicsDesc")}
+            concepts={basicsConcepts}
+            startIndex={0}
+            locale={locale}
+          />
+
+          <ConceptGroupSection
+            group="knowledge"
+            label={t("groupKnowledge")}
+            description={t("groupKnowledgeDesc")}
+            concepts={knowledgeConcepts}
+            startIndex={basicsConcepts.length}
+            locale={locale}
+          />
+
+          <ConceptGroupSection
+            group="agentic"
+            label={t("groupAgentic")}
+            description={t("groupAgenticDesc")}
+            concepts={agenticConcepts}
+            startIndex={basicsConcepts.length + knowledgeConcepts.length}
+            locale={locale}
+          />
+
+          {/* Planned concepts */}
+          {planned.length > 0 && (
+            <div className="mt-10">
+              <h2 className="mb-1 text-[11px] font-mono font-medium uppercase tracking-widest text-muted">
+                {t("comingNextHeading")}
+              </h2>
+              <p className="mb-4 text-sm text-muted">
+                {t("comingNextSubtitle")}
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {planned.map((concept, i) => (
+                  <ConceptCard
+                    key={concept.slug}
+                    concept={concept}
+                    index={i + available.length}
+                    locale={locale}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Where to start? */}
+      <div className="mx-auto max-w-4xl px-6 pb-12">
+        <h2 className="mb-3 text-[11px] font-mono font-medium uppercase tracking-widest text-muted">
+          {t("whereToStart")}
+        </h2>
+        <p className="mb-4 max-w-2xl text-sm text-secondary">
+          {t("whereToStartText")}
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {recommendedPath.map((concept, idx) => (
+            <Link
+              key={concept.slug}
+              href={`/${locale}/concepts/${concept.slug}`}
+              className="rounded-lg border border-border bg-surface-elevated p-4 transition-colors hover:border-border-hover hover:bg-surface-hover"
+            >
+              <p className="text-[10px] font-mono text-accent">{idx + 1}</p>
+              <p className="mt-1 text-sm font-medium text-primary">{concept.translatedTitle}</p>
+              <p className="mt-0.5 text-[11px] text-muted">{t(`pathStep${idx + 1}`)}</p>
+            </Link>
           ))}
         </div>
-
-        {/* Planned concepts */}
-        {planned.length > 0 && (
-          <div className="mt-16">
-            <h2 className="mb-1 text-[11px] font-mono font-medium uppercase tracking-widest text-muted">
-              {t("comingNextHeading")}
-            </h2>
-            <p className="mb-8 text-sm text-muted">
-              {t("comingNextSubtitle")}
-            </p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {planned.map((concept, i) => (
-                <ConceptCard
-                  key={concept.slug}
-                  concept={concept}
-                  index={i + available.length}
-                  locale={locale}
-                />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Footer */}

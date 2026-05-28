@@ -12,6 +12,8 @@ export type FutureConceptSlug = never;
 
 export type ConceptLevel = "basics" | "knowledge" | "agentic" | "reliability";
 
+export type ConceptGroup = "basics" | "knowledge" | "agentic";
+
 export type ConceptStatus = "available" | "planned";
 
 export type BaseConcept = {
@@ -19,6 +21,8 @@ export type BaseConcept = {
   title: string;
   shortDescription: string;
   level: ConceptLevel;
+  group: ConceptGroup;
+  order: number;
   status: ConceptStatus;
   color: string;
 };
