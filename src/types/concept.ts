@@ -3,9 +3,12 @@ export type ConceptSlug =
   | "embeddings"
   | "vector-search"
   | "context-window"
-  | "tool-calling";
+  | "tool-calling"
+  | "agents"
+  | "mcp"
+  | "memory";
 
-export type FutureConceptSlug = "agents" | "mcp" | "memory";
+export type FutureConceptSlug = never;
 
 export type ConceptLevel = "basics" | "knowledge" | "agentic" | "reliability";
 

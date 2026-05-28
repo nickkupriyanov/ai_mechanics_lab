@@ -5,6 +5,9 @@ import { EmbeddingsScene } from "@/components/scenes/embeddings/EmbeddingsScene"
 import { VectorSearchScene } from "@/components/scenes/vector-search/VectorSearchScene";
 import { ContextWindowScene } from "@/components/scenes/context-window/ContextWindowScene";
 import { ToolCallingScene } from "@/components/scenes/tool-calling/ToolCallingScene";
+import { MCPScene } from "@/components/scenes/mcp/MCPScene";
+import { AgentsScene } from "@/components/scenes/agents/AgentsScene";
+import { MemoryScene } from "@/components/scenes/memory/MemoryScene";
 import { SceneShell } from "@/components/shared/SceneShell";
 import type { ConceptSlug } from "@/types/concept";
 
@@ -25,6 +28,12 @@ export function ConceptSceneClient({ slug, title }: ConceptSceneClientProps) {
       return <ContextWindowScene />;
     case "tool-calling":
       return <ToolCallingScene />;
+    case "mcp":
+      return <MCPScene />;
+    case "agents":
+      return <AgentsScene />;
+    case "memory":
+      return <MemoryScene />;
   }
 
   return (

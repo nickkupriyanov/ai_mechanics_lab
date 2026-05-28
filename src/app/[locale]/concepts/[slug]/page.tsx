@@ -56,7 +56,7 @@ export default async function ConceptPage({ params }: Props) {
   const meta = await getTranslations({ locale, namespace: "ConceptsMeta" });
   const related = getRelatedConcepts(concept.slug as ConceptSlug);
 
-  const hasExplanation = ["rag", "embeddings", "vector-search", "context-window", "tool-calling"].includes(slug);
+  const hasExplanation = ["rag", "embeddings", "vector-search", "context-window", "tool-calling", "mcp", "agents", "memory"].includes(slug);
 
   const translatedTitle = meta(`${slug}.title`);
   const translatedDescription = meta(`${slug}.shortDescription`);

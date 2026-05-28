@@ -155,6 +155,64 @@
       ],
       "realWorldUsage": "Tool calling is used in AI assistants that interact with external systems: ChatGPT plugins, GitHub Copilot's agent mode, customer support bots that create tickets, coding assistants that run terminal commands, and AI agents that browse the web or query databases. The OpenAI function calling API and Anthropic's tool use are the most common implementations. Every AI agent is fundamentally built on tool calling."
     },
+    "mcp": {
+      "whatIsHappening_steps": [
+        "An MCP server is started and advertises its capabilities — the tools and data sources it provides.",
+        "The AI client connects to the MCP server via a standardized protocol (JSON-RPC over stdio or SSE).",
+        "The AI client sends a list_tools request — the MCP server responds with all available tools, their descriptions, and parameter schemas.",
+        "The user sends a request. The AI analyzes it against the discovered tool descriptions and selects the best matching tool.",
+        "The AI generates structured arguments for the selected tool. The MCP server executes the tool against the external system.",
+        "The result is returned to the AI client for final processing or response generation."
+      ],
+      "whatIsHappening_summary": "MCP does not make the model magical. It gives the AI application a standardized way to discover and use external capabilities. The protocol defines how tools are listed, called, and how results are returned — the model still needs to understand the user's intent and select the right tool.",
+      "howItBreaks": [
+        "Unreachable server: if the MCP server is not running or the connection fails, no tools are available — discovery fails at step one.",
+        "Vague tool descriptions: if the tool descriptions are too generic, the AI cannot distinguish between tools and may select the wrong one.",
+        "Similar tools confuse: when two tools have overlapping functionality (e.g. search_repos vs search_files), the model may pick either — inconsistently.",
+        "Tool execution error: if the external system returns an error, the MCP server passes it back. The AI must handle errors gracefully or retry.",
+        "Authentication missing: many MCP servers require API keys or tokens. Without proper auth, all tool calls fail regardless of the model's selection."
+      ],
+      "realWorldUsage": "MCP is an open standard defined by Anthropic and adopted by tools like Cursor, Claude Desktop, and Zed. It bridges AI assistants with GitHub, filesystems, databases, Figma, Google Drive, and more. MCP standardizes what was previously custom integrations — instead of building a new plugin for every tool, developers build one MCP server and any MCP-compatible client can use it. This is similar to how USB standardized device connections: one protocol, many devices."
+    },
+    "memory": {
+      "whatIsHappening_steps": [
+        "The system stores remembered information about the user — preferences, context, skills, and history.",
+        "When a query arrives, the system retrieves relevant memories by semantic similarity.",
+        "Memories are ranked by relevance score and filtered by a retrieval threshold.",
+        "Only memories above the threshold and active (not deleted) are considered for the context.",
+        "The top retrieved memories are inserted into the context window, up to the context limit.",
+        "Stale or outdated memories may still be retrieved — the system does not automatically verify correctness."
+      ],
+      "whatIsHappening_summary": "Memory is stored information that may later be retrieved and inserted into the current context. It is not the same as the model permanently knowing something. Memories are database records that must be searched, retrieved, and assembled into the prompt each time they are needed.",
+      "howItBreaks": [
+        "Stale memory: outdated information (old job, deprecated tools) may still be retrieved and presented as current facts, misleading the model.",
+        "Context overflow: too many retrieved memories or a tight context limit can push essential recent memories out of the window.",
+        "Deleted memory: if a key memory is removed or deactivated, the system cannot retrieve it — the model loses access to that information entirely.",
+        "Irrelevant retrieval: memory may be retrieved that is semantically close to the query but practically useless for answering it.",
+        "Low relevance threshold: memories with borderline relevance can be missed, even if they contain the exact information needed."
+      ],
+      "realWorldUsage": "Memory systems power personalized AI assistants that remember user preferences across sessions. ChatGPT's memory feature, LangChain's ConversationBufferMemory, and Mem0 are real examples. In production, memory systems must balance retrieval quality, freshness detection, and context budget. Stale memory is one of the most common failure modes in long-running AI agents — the system remembers what was true months ago, not what is true now."
+    },
+    "agents": {
+      "whatIsHappening_steps": [
+        "The agent receives a goal — a high-level description of what it should accomplish.",
+        "The agent creates a plan: it breaks the goal into actionable steps and decides which tools to use.",
+        "The agent calls a tool with structured arguments — this is the same tool-calling mechanism you explored earlier.",
+        "The tool returns an observation — the result of the action, which may be data, an error, or a confirmation.",
+        "The agent reflects on the observation: did the action move me closer to the goal? What should I do next?",
+        "The agent decides the next step: continue with the next planned action, revise the plan, or stop if the goal is achieved.",
+        "This loop repeats until the goal is achieved or the maximum number of steps is reached."
+      ],
+      "whatIsHappening_summary": "Agents are not one-shot tool calls. They run in a continuous loop — plan, act, observe, reflect, repeat. Each step depends on the outcome of the previous one. Without clear goals and proper constraints, this loop can run forever or chase dead ends.",
+      "howItBreaks": [
+        "Infinite loop: without a stop condition, the agent keeps running after achieving the goal — or keeps retrying a failing tool forever.",
+        "Vague goal: an unclear goal like 'help me with stuff' leads to wrong tool selection — the agent guesses instead of asking for clarification.",
+        "Wrong tool: poor tool reliability or bad tool descriptions cause the agent to pick the wrong tool, wasting steps on useless actions.",
+        "No reflection: without reflection, the agent cannot learn from its mistakes. It repeats the same failed approach instead of adapting.",
+        "Unreliable tools: when tools frequently return errors, the agent gets stuck retrying the same action, unable to make progress."
+      ],
+      "realWorldUsage": "AI agents power autonomous systems like Devin (autonomous coding), AutoGPT, Claude's computer use, and customer support agents that handle multi-step workflows. Production agents always include stop conditions, tool reliability checks, reflection steps, and often human approval gates for critical actions. Without these safeguards, agents can loop, waste resources, or take destructive actions."
+    },
     "placeholder": {
       "whatIsHappening": "This concept page will include an interactive visual simulation that shows exactly how {title} works in AI systems. You will be able to change parameters, observe results, and understand the mechanics.",
       "howItBreaks": "Every concept in AI Mechanics Lab includes failure modes — ways the system can go wrong. Understanding failures is often more valuable than understanding ideal behavior.",
@@ -550,6 +608,205 @@
       "high": "high",
       "medium": "medium",
       "defaultPath": "/documents"
+    }
+  },
+  "Memory": {
+    "pipeline": {
+      "saved": "Saved",
+      "savedValue": "{count} active",
+      "retrieval": "Retrieval",
+      "retrievalValue": "{count} retrieved",
+      "context": "Context",
+      "contextValue": "{fit} fit, {excl} excl."
+    },
+    "list": {
+      "title": "Saved Memories ({count})",
+      "activeCount": "{count} active",
+      "stale": "STALE"
+    },
+    "retrieval": {
+      "title": "Retrieval Results",
+      "aboveThreshold": "Above threshold (retrieved)",
+      "belowThreshold": "Below threshold (excluded)",
+      "aboveCount": "{count} above",
+      "totalCount": "{count} total",
+      "noMemories": "No memories found for this query.",
+      "stale": "STALE",
+      "excludedBadge": "EXCLUDED",
+      "skipped": "skipped"
+    },
+    "context": {
+      "title": "Context Window",
+      "tokensLabel": "{used} / {limit} tokens",
+      "used": "Used: {tokens} tok.",
+      "free": "Free: {tokens} tok.",
+      "inContext": "In context ({count})",
+      "excluded": "Excluded ({count})",
+      "noMemories": "No memories fit in the context window.",
+      "overflowWarning": "Essential memory excluded!",
+      "overflowWarningDesc": "The context limit is too small. Relevant memories are being pushed out, which may cause the model to miss critical user information.",
+      "promptPreview": "Prompt Preview",
+      "systemPrompt": "You are an AI assistant with access to memory about the user. Use the following remembered information to personalize your response. If a memory seems outdated or irrelevant, disregard it.",
+      "memoryLabel": "[Memory — {count, plural, one {# snippet} other {# snippets}}]",
+      "stalePrefix": "[STALE]",
+      "stale": "STALE"
+    },
+    "controls": {
+      "query": "Query",
+      "contextLimit": "Context Limit",
+      "contextLimitLabel": "Limit: {limit} tokens",
+      "contextLimitHintSmall": "Too small — critical memories excluded",
+      "contextLimitHintGood": "Sufficient space for retrieved memories",
+      "tokenCount": "{tokens} tokens",
+      "resetMemories": "Reset Memories"
+    },
+    "presets": {
+      "normalMemory": "Normal memory",
+      "normalMemoryDesc": "All memories active, relevant ones retrieved, everything fits in context.",
+      "staleMemory": "Stale memory",
+      "staleMemoryDesc": "Outdated memories (old tools, old preferences) are retrieved but are no longer correct — the model gets wrong information.",
+      "overflowMemory": "Context overflow",
+      "overflowMemoryDesc": "Context limit is too small — only a few memories fit, others are excluded even though they are relevant.",
+      "deletedMemory": "Deleted memory",
+      "deletedMemoryDesc": "A key memory (TypeScript preference) has been deleted so it cannot be retrieved — the model loses critical personalization."
+    }
+  },
+  "MCP": {
+    "pipeline": {
+      "discovery": "Discovery",
+      "selection": "Selection",
+      "execution": "Execution",
+      "idle": "idle",
+      "discovering": "discovering",
+      "executing": "executing",
+      "done": "done"
+    },
+    "bridge": {
+      "diagramLabel": "MCP Protocol Diagram: AI Client to MCP Server to External System",
+      "aiClient": "AI Client",
+      "aiClientHint": "Claude, Cursor, Zed",
+      "mcpServer": "MCP Server",
+      "mcpServerHint": "Standard bridge",
+      "externalSystem": "Ext. System",
+      "tools": "tools",
+      "requesting": "executing",
+      "returning": "result",
+      "protocolLabel": "JSON-RPC",
+      "standardBridge": "standard bridge",
+      "dataSource": "data source"
+    },
+    "servers": {
+      "title": "MCP Servers",
+      "available": "available",
+      "tools": "tools",
+      "selectToStart": "Select an MCP server to begin"
+    },
+    "discovery": {
+      "title": "Discovery Process",
+      "idleHint": "Click 'Run Discovery' to simulate how the AI client discovers and uses an MCP server's capabilities.",
+      "step1Label": "AI Client sends list_tools request",
+      "step2Label": "MCP Server ({server}) responds with capabilities",
+      "step3Label": "AI selects a tool based on user's request",
+      "step3LabelWithTool": "AI selects {tool} based on user's request",
+      "step3Hint": "The AI will match the user's request to the best available tool.",
+      "step4Label": "Tool is executed — result returned to AI",
+      "step4LabelSuccess": "Tool executed successfully — result returned",
+      "step4LabelError": "Tool execution failed — error returned to AI",
+      "step4Hint": "The MCP server executes the tool and returns the result for AI processing."
+    },
+    "controls": {
+      "discoveryTitle": "Discovery",
+      "runDiscovery": "Run Discovery",
+      "discovered": "Discovered",
+      "callTool": "Call Tool",
+      "executed": "Executed",
+      "reset": "Reset",
+      "query": "User Query",
+      "vagueDescriptions": "Vague descriptions",
+      "vagueDescriptionsDesc": "Unclear tool descriptions cause wrong selection",
+      "simulateError": "Simulate error",
+      "simulateErrorDesc": "Tool returns an error instead of result",
+      "on": "ON",
+      "off": "OFF",
+      "display": "Display",
+      "showDiscovery": "Show discovery steps",
+      "visible": "VISIBLE",
+      "hidden": "HIDDEN"
+    },
+    "queries": {
+      "github-search": "Search TypeScript repos about AI",
+      "github-issue": "Create a bug report issue",
+      "filesystem-config": "Read a config file",
+      "database-query": "Query active users",
+      "figma-components": "List design components",
+      "drive-search": "Find project proposal doc"
+    },
+    "presets": {
+      "goodDiscovery": "Good discovery",
+      "goodDiscoveryDesc": "Clear tool descriptions, correct tool selected, successful execution.",
+      "badDescriptions": "Bad descriptions",
+      "badDescriptionsDesc": "Vague tool descriptions cause wrong tool selection.",
+      "toolError": "Tool error",
+      "toolErrorDesc": "The selected tool returns an error — AI must handle it gracefully.",
+      "unreachable": "Unreachable server",
+      "unreachableDesc": "The MCP server is not available — discovery fails at step 1."
+    }
+  },
+  "Agents": {
+    "pipeline": {
+      "agentLoop": "Agent Loop",
+      "goal": "Goal",
+      "plan": "Plan",
+      "toolCall": "Tool Call",
+      "observation": "Observation",
+      "reflection": "Reflection",
+      "nextStep": "Next Step",
+      "steps": "Steps",
+      "on": "ON",
+      "off": "OFF"
+    },
+    "controls": {
+      "runNextStep": "Run Next Step",
+      "reset": "Reset",
+      "scenario": "Scenario",
+      "settings": "Settings",
+      "maxStepsLabel": "Max steps: {n}",
+      "maxStepsHintHigh": "Too many — agent may waste resources on unnecessary steps",
+      "maxStepsHintLow": "Too few — agent may not have enough steps to reach the goal",
+      "maxStepsHintGood": "Reasonable limit for this goal",
+      "reflection": "Reflection",
+      "reflectionHintOn": "Agent reflects on observations — adapts plan based on results",
+      "reflectionHintOff": "Without reflection — agent repeats the same approach without learning",
+      "toolReliability": "Tool Reliability",
+      "good": "Good (80%)",
+      "poor": "Poor (30%)",
+      "reliabilityHintGood": "Tools work reliably — most calls succeed",
+      "reliabilityHintPoor": "Tools frequently fail — agent must handle errors or gets stuck",
+      "stopCondition": "Stop Condition",
+      "stopConditionHintOn": "Agent stops when goal is reached",
+      "stopConditionHintOff": "Agent continues running even after goal is achieved",
+      "on": "ON",
+      "off": "OFF",
+      "presetsTitle": "Presets",
+      "status": "Status"
+    },
+    "presets": {
+      "infiniteLoop": "Infinite loop",
+      "infiniteLoopDesc": "Low reliability + no stop condition = agent loops forever retrying failed calls.",
+      "wrongTool": "Wrong tool",
+      "wrongToolDesc": "Vague goal leads to wrong tool selection — agent wastes steps guessing.",
+      "vagueGoal": "Vague goal",
+      "vagueGoalDesc": "No reflection with a vague goal — 3 meaningless attempts before giving up.",
+      "noStop": "No stop condition",
+      "noStopDesc": "Even after success, without a stop condition the agent keeps running."
+    },
+    "log": {
+      "stepLog": "Step Log",
+      "stepLabel": "Step {n}",
+      "action": "Action:",
+      "tool": "Tool:",
+      "observation": "Observation:",
+      "reflection": "Reflection:"
     }
   }
 }

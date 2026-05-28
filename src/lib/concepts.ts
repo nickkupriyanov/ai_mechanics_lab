@@ -57,9 +57,9 @@ export const concepts: Concept[] = [
     shortDescription:
       "Agents run in a loop: goal, plan, tool call, observation, reflection, next step. Without proper constraints, they can loop forever.",
     level: "agentic",
-    status: "planned",
+    status: "available",
     color: "#ec4899",
-    relatedConcepts: ["tool-calling", "memory"],
+    relatedConcepts: ["tool-calling", "mcp", "memory"],
   },
   {
     slug: "mcp",
@@ -67,7 +67,7 @@ export const concepts: Concept[] = [
     shortDescription:
       "Model Context Protocol is a standard bridge between AI clients and external tools. It standardizes how AI discovers and uses capabilities.",
     level: "agentic",
-    status: "planned",
+    status: "available",
     color: "#14b8a6",
     relatedConcepts: ["tool-calling", "agents"],
   },
@@ -77,7 +77,7 @@ export const concepts: Concept[] = [
     shortDescription:
       "Memory is stored information retrieved later into the context. It is not the same as the model permanently knowing something.",
     level: "agentic",
-    status: "planned",
+    status: "available",
     color: "#8b5cf6",
     relatedConcepts: ["context-window", "agents"],
   },

@@ -3,6 +3,8 @@ export type Tool = {
   name: string;
   description: string;
   badDescription: string;
+  descriptionRu: string;
+  badDescriptionRu: string;
   parameters: ToolParam[];
   isDestructive: boolean;
 };
@@ -17,7 +19,9 @@ export type ToolParam = {
 export type UserRequest = {
   id: string;
   label: string;
+  labelRu: string;
   query: string;
+  queryRu: string;
   expectedToolId: string;
   expectedArgs: Record<string, string>;
   context?: string;
@@ -40,6 +44,10 @@ export const tools: Tool[] = [
       "Search the internal knowledge base for documents matching a query string. Returns top results with relevance scores.",
     badDescription:
       "Searches stuff and finds things. Returns whatever it finds.",
+    descriptionRu:
+      "Поиск по внутренней базе знаний документов, соответствующих поисковому запросу. Возвращает топ результатов с оценками релевантности.",
+    badDescriptionRu:
+      "Ищет всякое и находит что-то. Возвращает что найдёт.",
     parameters: [
       {
         name: "query",
@@ -63,6 +71,10 @@ export const tools: Tool[] = [
       "Send an email to one or more recipients. Supports subject, body, and CC fields. Requires explicit confirmation for external recipients.",
     badDescription:
       "Sends messages. Good for communication.",
+    descriptionRu:
+      "Отправка email одному или нескольким получателям. Поддерживает тему, тело письма и копии. Требует явного подтверждения для внешних получателей.",
+    badDescriptionRu:
+      "Отправляет сообщения. Подходит для коммуникации.",
     parameters: [
       {
         name: "to",
@@ -92,6 +104,10 @@ export const tools: Tool[] = [
       "Run a read-only SQL query against the application database. Only SELECT queries are allowed. Results are returned as JSON.",
     badDescription:
       "Runs database commands and returns data.",
+    descriptionRu:
+      "Выполнение SQL-запроса только для чтения к базе данных приложения. Разрешены только SELECT-запросы. Результаты возвращаются в JSON.",
+    badDescriptionRu:
+      "Выполняет команды базы данных и возвращает данные.",
     parameters: [
       {
         name: "sql",
@@ -109,6 +125,10 @@ export const tools: Tool[] = [
       "Create a support ticket in the issue tracking system. Requires a title, description, and priority level.",
     badDescription:
       "Makes a new ticket for tracking problems.",
+    descriptionRu:
+      "Создание тикета поддержки в системе отслеживания задач. Требует заголовок, описание и уровень приоритета.",
+    badDescriptionRu:
+      "Создаёт новый тикет для отслеживания проблем.",
     parameters: [
       {
         name: "title",
@@ -138,6 +158,10 @@ export const tools: Tool[] = [
       "Get current weather conditions for a specified city. Returns temperature, humidity, wind speed, and conditions.",
     badDescription:
       "Gets weather information for places.",
+    descriptionRu:
+      "Получение текущих погодных условий для указанного города. Возвращает температуру, влажность, скорость ветра и условия.",
+    badDescriptionRu:
+      "Получает информацию о погоде для мест.",
     parameters: [
       {
         name: "city",
@@ -163,6 +187,10 @@ export const similarTool: Tool = {
     "Search the file system for documents matching a query. Similar to search_documents but searches local files instead of the knowledge base.",
   badDescription:
     "Searches for files matching a query.",
+  descriptionRu:
+    "Поиск в файловой системе документов, соответствующих запросу. Похож на search_documents, но ищет локальные файлы вместо базы знаний.",
+  badDescriptionRu:
+    "Ищет файлы, соответствующие запросу.",
   parameters: [
     {
       name: "query",
@@ -184,42 +212,54 @@ export const userRequests: UserRequest[] = [
   {
     id: "weather",
     label: "Check the weather in San Francisco",
+    labelRu: "Узнать погоду в Сан-Франциско",
     query: "What's the current weather in San Francisco? I need temperature in celsius.",
+    queryRu: "Какая сейчас погода в Сан-Франциско? Нужна температура в градусах Цельсия.",
     expectedToolId: "get_weather",
     expectedArgs: { city: "San Francisco", units: "celsius" },
   },
   {
     id: "search",
     label: "Find docs about vector databases",
+    labelRu: "Найти документацию по векторным базам данных",
     query: "Find documentation about vector databases and similarity search.",
+    queryRu: "Найди документацию о векторных базах данных и поиске по сходству.",
     expectedToolId: "search_docs",
     expectedArgs: { query: "vector databases similarity search", max_results: "5" },
   },
   {
     id: "db-query",
     label: "How many active users?",
+    labelRu: "Сколько активных пользователей?",
     query: "How many active users do we have in the last 30 days?",
+    queryRu: "Сколько у нас активных пользователей за последние 30 дней?",
     expectedToolId: "query_db",
     expectedArgs: { sql: "SELECT COUNT(*) FROM users WHERE last_active > NOW() - INTERVAL '30 days'" },
   },
   {
     id: "send-email",
     label: "Send deployment update to team",
+    labelRu: "Отправить обновление о деплое команде",
     query: "Send an email to team@company.com with subject 'Deployment Complete' and let them know the new version is live.",
+    queryRu: "Отправь письмо на team@company.com с темой 'Deployment Complete' и сообщи, что новая версия развёрнута.",
     expectedToolId: "send_email",
     expectedArgs: { to: "team@company.com", subject: "Deployment Complete", body: "The new version has been deployed and is now live." },
   },
   {
     id: "create-ticket",
     label: "Create ticket for login bug",
+    labelRu: "Создать тикет для бага входа",
     query: "Create a high priority ticket — users are reporting they can't log in after the latest update. The error says 'Invalid session token'.",
+    queryRu: "Создай тикет с высоким приоритетом — пользователи сообщают, что не могут войти после последнего обновления. Ошибка: 'Invalid session token'.",
     expectedToolId: "create_ticket",
     expectedArgs: { title: "Users unable to log in — Invalid session token error", description: "After the latest update, users report getting 'Invalid session token' error when trying to log in.", priority: "high" },
   },
   {
     id: "ambiguous",
     label: "Check weather and send update",
+    labelRu: "Узнать погоду и отправить обновление",
     query: "Can you check the weather in New York and send an update email to the office manager?",
+    queryRu: "Можешь узнать погоду в Нью-Йорке и отправить обновление по email офис-менеджеру?",
     expectedToolId: "get_weather",
     expectedArgs: { city: "New York", units: "celsius" },
     context: "Ambiguous: user mentioned both weather check and email. The model must pick the most relevant tool.",

@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useToolCallingStore } from "@/store/tool-calling-store";
 import {
   tools,
   similarTool,
+  userRequests,
   selectTool,
   generateArgs,
   executeTool,
@@ -19,6 +20,7 @@ export function ToolCallingScene() {
   const t = useTranslations("ToolCalling.pipeline");
   const tc = useTranslations("ToolCalling.controls");
   const tData = useTranslations("ToolCallingData");
+  const locale = useLocale();
 
   const {
     userQuery,
@@ -31,17 +33,22 @@ export function ToolCallingScene() {
   } = useToolCallingStore();
 
   const availableTools = useMemo(() => {
+    const isRu = locale === "ru";
     const base = tools.map((t) => ({
       ...t,
-      description: useBadDescriptions ? t.badDescription : t.description,
+      description: useBadDescriptions
+        ? (isRu ? t.badDescriptionRu : t.badDescription)
+        : (isRu ? t.descriptionRu : t.description),
     }));
     if (enableSimilarTools) {
       const s = { ...similarTool };
-      if (useBadDescriptions) s.description = s.badDescription;
+      s.description = useBadDescriptions
+        ? (isRu ? s.badDescriptionRu : s.badDescription)
+        : (isRu ? s.descriptionRu : s.description);
       base.push(s);
     }
     return base;
-  }, [useBadDescriptions, enableSimilarTools]);
+  }, [useBadDescriptions, enableSimilarTools, locale]);
 
   const { selectedTool, scoreMap } = useMemo(() => {
     const map = new Map<string, number>();
@@ -98,6 +105,13 @@ export function ToolCallingScene() {
     return rawResult;
   }, [rawResult, tData]);
 
+  const displayQuery = useMemo(() => {
+    const req = userRequests.find(
+      (r) => r.query === userQuery || r.queryRu === userQuery,
+    );
+    return locale === "ru" ? (req?.queryRu ?? userQuery) : userQuery;
+  }, [userQuery, locale]);
+
   return (
     <div className="space-y-6">
       {/* Flow diagram */}
@@ -150,7 +164,7 @@ export function ToolCallingScene() {
               </span>
             </div>
             <div className="p-4">
-              <p className="text-[13px] leading-relaxed text-primary">{userQuery}</p>
+              <p className="text-[13px] leading-relaxed text-primary">{displayQuery}</p>
             </div>
           </div>
 

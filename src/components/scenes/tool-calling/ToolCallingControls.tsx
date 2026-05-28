@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useToolCallingStore } from "@/store/tool-calling-store";
 import { userRequests, toolCallingPresets } from "@/lib/simulation/tool-calling";
 import { ControlPanel } from "@/components/shared/ControlPanel";
@@ -32,6 +32,7 @@ export function ToolCallingControls() {
   const t = useTranslations("ToolCalling.controls");
   const tp = useTranslations("ToolCalling.presets");
   const tShared = useTranslations("Shared");
+  const locale = useLocale();
 
   const {
     userQuery,
@@ -68,7 +69,9 @@ export function ToolCallingControls() {
                   : "border-border bg-surface text-secondary hover:border-border-hover"
               }`}
             >
-              <span className="block line-clamp-2">{req.label}</span>
+              <span className="block line-clamp-2">
+                {locale === "ru" ? req.labelRu : req.label}
+              </span>
             </button>
           ))}
         </div>
